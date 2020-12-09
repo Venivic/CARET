@@ -1,0 +1,122 @@
+---
+title: "Caret"
+output: html_document
+author: "Victor Garcia"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction 
+
+Le packet caret ( est un ensemble de fonctions qui tentent de rationaliser le processus de création de modèles prédictifs. Le package contient des outils pour:
+
+fractionnement des données
+prétraitement
+sélection de fonctionnalité
+réglage du modèle à l'aide du rééchantillonnage
+estimation de l'importance variable
+ainsi que d'autres fonctionnalités.
+
+Il existe de nombreuses fonctions de modélisation différentes dans R. Certaines ont une syntaxe différente pour l'apprentissage du modèle et / ou la prédiction. Le package a commencé comme un moyen de fournir une interface uniforme aux fonctions elles-mêmes, ainsi qu'un moyen de standardiser les tâches courantes (tel que le réglage des paramètres et l'importance des variables).
+
+
+## Visualisation
+
+Lafonction plot est un wrapper pour différents "lattice plots" pour visualiser les données. Par exemple, les figures suivantes montrent le tracé par défaut des résultats continus générés à l'aide de la featurePlotfonction.
+
+Pour les ensembles de données de classification, les iris données sont utilisées à des fins d'illustration.
+```{r cars}
+str(iris)
+```
+
+## Scatterplot Matrix
+
+
+```{r pressure, echo=FALSE}
+#install.packages("AppliedPredictiveModeling")
+library(AppliedPredictiveModeling)
+transparentTheme(trans = .4)
+library(caret)
+featurePlot(x = iris[, 1:4], 
+            y = iris$Species, 
+            plot = "pairs",
+            ## ajouter une clé 
+            auto.key = list(columns = 3))
+```
+
+##Scatterplot Matrix avec Ellipses
+
+```{r}
+featurePlot(x = iris[, 1:4], 
+            y = iris$Species, 
+            plot = "ellipse",
+            
+            auto.key = list(columns = 3))
+```
+##Overlayed Density Plots
+```{r}
+transparentTheme(trans = .9)
+featurePlot(x = iris[, 1:4], 
+            y = iris$Species,
+            plot = "density", 
+         
+            scales = list(x = list(relation="free"), 
+                          y = list(relation="free")), 
+            adjust = 1.5, 
+            pch = "|", 
+            layout = c(4, 1), 
+            auto.key = list(columns = 3))
+```
+
+## Box Plots
+```{r}
+featurePlot(x = iris[, 1:4], 
+            y = iris$Species, 
+            plot = "box", 
+          
+            scales = list(y = list(relation="free"),
+                          x = list(rot = 90)),  
+            layout = c(4,1 ), 
+            auto.key = list(columns = 2))
+```
+## Scatter Plots
+```{r}
+#install.packages("mlbench")
+library(mlbench)
+data(BostonHousing)
+regVar <- c("age", "lstat", "tax")
+str(BostonHousing[, regVar])
+```
+
+
+
+Lorsque les prédictions sont continues, featurePlot peut être utilisé pour créer des nuages de points qui permetteront avec le résultat de pouvoir faire des prédictios.
+<br> Par exemple:
+```{r}
+theme1 <- trellis.par.get()
+theme1$plot.symbol$col = rgb(.2, .2, .2, .4)
+theme1$plot.symbol$pch = 16
+theme1$plot.line$col = rgb(1, 0, 0, .7)
+theme1$plot.line$lwd <- 2
+trellis.par.set(theme1)
+featurePlot(x = BostonHousing[, regVar], 
+            y = BostonHousing$medv, 
+            plot = "scatter", 
+            layout = c(3, 1))
+```
+
+
+Notez que les échelles de l'axe des x sont différentes. La fonction utilise automatiquement scale = list (y = list (relation = "free")) afin que vous n'ayez pas à l'ajouter. On peut également passer des options à la fonction treillis xyplot. Par exemple, nous pouvons ajouter un nuage de points plus lisse en passant de nouvelles options :
+```{r}
+featurePlot(x = BostonHousing[, regVar], 
+            y = BostonHousing$medv, 
+            plot = "scatter",
+            type = c("p", "smooth"),
+            span = .5,
+            layout = c(3, 1))
+```
+
+
+
